@@ -14,6 +14,12 @@ public class LeaderBoard : MonoBehaviour
     [Header("Colors")]
     [SerializeField] private Color[] textColors; // Массив цветов
 
+    [Header("Coordinate Range")]
+    [SerializeField] private int minX = 0;
+    [SerializeField] private int maxX = 1500;
+    [SerializeField] private int minY = -1500;
+    [SerializeField] private int maxY = 0;
+
     private string publicLeaderboardKey =
         "8a1a45fd3e13c3224df5b97efb3bb7e6b25815ba748a3e2a4a84dd55b0ca42f1";
 
@@ -41,7 +47,8 @@ public class LeaderBoard : MonoBehaviour
                 RectTransform rt = entry.GetComponent<RectTransform>();
                 if (rt != null)
                 {
-                    rt.anchoredPosition = Vector2.zero;
+                    Vector2 coords = DecodeCoordinates(msg[i].Extra);
+                    rt.anchoredPosition = coords;
                     rt.localRotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(-20f, 20f));
                 }
 
@@ -49,7 +56,8 @@ public class LeaderBoard : MonoBehaviour
                 TextMeshProUGUI textComp = entry.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComp != null)
                 {
-                    textComp.text = msg[i].Username;
+                    string dateString = FormatEntryDate(msg[i].Date);
+                    textComp.text = $"{msg[i].Username} ({dateString})";
 
                     if (textColors != null && textColors.Length > 0)
                     {
@@ -62,11 +70,51 @@ public class LeaderBoard : MonoBehaviour
         });
     }
 
+    private Vector2 DecodeCoordinates(string extra)
+    {
+        if (string.IsNullOrEmpty(extra))
+            return Vector2.zero;
+
+        string[] parts = extra.Split(';');
+        if (parts.Length != 2)
+            return Vector2.zero;
+
+        if (int.TryParse(parts[0], out int x) && int.TryParse(parts[1], out int y))
+        {
+            return new Vector2(x, y);
+        }
+
+        return Vector2.zero;
+    }
+    
+    private string FormatEntryDate(ulong dateValue)
+    {
+        DateTime dateTime;
+        if (dateValue > 1000000000000) // миллисекунды
+            dateTime = DateTimeOffset.FromUnixTimeMilliseconds((long)dateValue).DateTime;
+        else // секунды
+            dateTime = DateTimeOffset.FromUnixTimeSeconds((long)dateValue).DateTime;
+
+        return dateTime.ToString("dd.MM.yyyy");
+    }
+
     public void SetLeaderboardEntry(string username, int score)
     {
-        LeaderboardCreator.UploadNewEntry(publicLeaderboardKey, username, score, (msg) =>
+        // Генерируем случайные координаты в заданном диапазоне
+        int x = UnityEngine.Random.Range(minX, maxX + 1);
+        int y = UnityEngine.Random.Range(minY, maxY + 1);
+
+        // Формируем строку для extra
+        string extra = $"{x};{y}";
+
+        LeaderboardCreator.UploadNewEntry(publicLeaderboardKey, username, score, extra, (success) =>
         {
-            GetLeaderBoard();
+            if (success)
+                GetLeaderBoard();
+        },
+        (error) =>
+        {
+            Debug.LogError("Ошибка загрузки записи: " + error);
         });
     }
 
