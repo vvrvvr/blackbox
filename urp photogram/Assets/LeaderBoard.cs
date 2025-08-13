@@ -17,7 +17,7 @@ public class LeaderBoard : MonoBehaviour
     [Header("Coordinate Range")]
     [SerializeField] private int minX = 0;
     [SerializeField] private int maxX = 1500;
-    [SerializeField] private int minY = -1500;
+    [SerializeField] private int minY = 1500;
     [SerializeField] private int maxY = 0;
 
     private string publicLeaderboardKey =
@@ -47,7 +47,7 @@ public class LeaderBoard : MonoBehaviour
                 RectTransform rt = entry.GetComponent<RectTransform>();
                 if (rt != null)
                 {
-                    Vector2 coords = DecodeCoordinates(msg[i].Extra);
+                    Vector2 coords = DecodeCoordinates(msg[i].Score);
                     rt.anchoredPosition = coords;
                     rt.localRotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(-20f, 20f));
                 }
@@ -70,23 +70,37 @@ public class LeaderBoard : MonoBehaviour
         });
     }
 
-    private Vector2 DecodeCoordinates(string extra)
+    /// <summary>
+    /// Восстанавливаем координаты из числа (Score)
+    /// </summary>
+    private Vector2 DecodeCoordinates(int combinedScore)
     {
-        if (string.IsNullOrEmpty(extra))
-            return Vector2.zero;
-
-        string[] parts = extra.Split(';');
-        if (parts.Length != 2)
-            return Vector2.zero;
-
-        if (int.TryParse(parts[0], out int x) && int.TryParse(parts[1], out int y))
-        {
-            return new Vector2(x, y);
-        }
-
-        return Vector2.zero;
+        var (x, y) = ParseCoordinatesFromNumber(combinedScore);
+        return new Vector2(x, -y);
     }
-    
+
+    /// <summary>
+    /// Форматируем координаты в одно число (Score)
+    /// </summary>
+    private int FormatCoordinatesAsNumber(int x, int y)
+    {
+        string xStr = x.ToString("D4");
+        string yStr = y.ToString("D4");
+        var num = xStr + yStr;
+        return int.Parse(xStr + yStr);
+    }
+
+    /// <summary>
+    /// Парсим число обратно в координаты (x, y)
+    /// </summary>
+    private (int x, int y) ParseCoordinatesFromNumber(int combined)
+    {
+        string str = combined.ToString().PadLeft(8, '0');
+        string xStr = str.Substring(0, 4);
+        string yStr = str.Substring(4, 4);
+        return (int.Parse(xStr), int.Parse(yStr));
+    }
+
     private string FormatEntryDate(ulong dateValue)
     {
         DateTime dateTime;
@@ -98,16 +112,16 @@ public class LeaderBoard : MonoBehaviour
         return dateTime.ToString("dd.MM.yyyy");
     }
 
-    public void SetLeaderboardEntry(string username, int score)
+    public void SetLeaderboardEntry(string username, string extra)
     {
         // Генерируем случайные координаты в заданном диапазоне
         int x = UnityEngine.Random.Range(minX, maxX + 1);
-        int y = UnityEngine.Random.Range(minY, maxY + 1);
+        int y = UnityEngine.Random.Range(minY, maxY + 1) * -1;
 
-        // Формируем строку для extra
-        string extra = $"{x};{y}";
-
-        LeaderboardCreator.UploadNewEntry(publicLeaderboardKey, username, score, extra, (success) =>
+        // Вместо Extra теперь кодируем координаты в Score
+        int combined = FormatCoordinatesAsNumber(x, y);
+        
+        LeaderboardCreator.UploadNewEntry(publicLeaderboardKey, username, combined, extra, (success) =>
         {
             if (success)
                 GetLeaderBoard();
