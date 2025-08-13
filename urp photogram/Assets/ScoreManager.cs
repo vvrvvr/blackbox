@@ -11,7 +11,7 @@ public class ScoreManager : MonoBehaviour
     public UnityEvent<string, string> submitScoreEvent;
 
     private const int MaxNameLength = 50;
-    private const int MaxExtraLength = 90;
+    private const int MaxExtraLength = 50;
 
     public void SubmintScore()
     {
@@ -21,23 +21,28 @@ public class ScoreManager : MonoBehaviour
 
         if (fullText.Length <= MaxNameLength)
         {
-            username = fullText; // полностью помещается
+            username = fullText;
         }
         else
         {
-            // первые 50 символов в username
             username = fullText.Substring(0, MaxNameLength);
+            Debug.Log("username: "+username);
 
-            // оставшиеся символы в extra, максимум 90 символов
+            // сколько символов остаётся после 50 для extra
             int remainingLength = fullText.Length - MaxNameLength;
-            int extraLength = Mathf.Min(remainingLength, MaxExtraLength);
+            Debug.Log("remainingLength: "+remainingLength);
 
-            extra = fullText.Substring(MaxNameLength, extraLength);
-
-            // добавляем троеточие, если что-то обрезалось
-            if (extraLength < remainingLength)
+            // если больше MaxExtraLength, обрезаем и добавляем троеточие
+            if (remainingLength > MaxExtraLength)
             {
-                extra += "...";
+                extra = fullText.Substring(MaxNameLength, MaxExtraLength) + "...";
+                Debug.Log("extra: "+extra);
+                Debug.Log("...");
+            }
+            else
+            {
+                extra = fullText.Substring(MaxNameLength, remainingLength);
+                Debug.Log("else");
             }
         }
 
