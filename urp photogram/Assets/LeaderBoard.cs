@@ -57,7 +57,7 @@ public class LeaderBoard : MonoBehaviour
                 if (textComp != null)
                 {
                     string dateString = FormatEntryDate(msg[i].Date);
-                    textComp.text = $"{msg[i].Username} ({dateString})";
+                    textComp.text = $"{msg[i].Username}{msg[i].Extra} ({dateString})";
 
                     if (textColors != null && textColors.Length > 0)
                     {
