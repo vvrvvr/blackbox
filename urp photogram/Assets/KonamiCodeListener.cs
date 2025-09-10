@@ -8,9 +8,11 @@ public class KonamiCodeListener : MonoBehaviour
     public GameObject hintObject;
     public float hintTime = 3f;
     private bool isCameraActive = false;
-    [HideInInspector] public int launchState = 0;
     public GameObject inputCanvas;
-    
+    public int launchState;
+
+    private const string LaunchStateKey = "LaunchState"; // ключ для PlayerPrefs
+
     private List<KeyCode> konamiCode = new List<KeyCode> {
         KeyCode.UpArrow, KeyCode.UpArrow,
         KeyCode.DownArrow, KeyCode.DownArrow,
@@ -19,6 +21,13 @@ public class KonamiCodeListener : MonoBehaviour
     };
 
     private List<KeyCode> inputBuffer = new List<KeyCode>();
+
+    void Awake()
+    {
+        // Загружаем сохранённый launchState (по умолчанию 0)
+        launchState = PlayerPrefs.GetInt(LaunchStateKey, 0);
+        //ResetLaunchState();
+    }
 
     void Update()
     {
@@ -64,40 +73,51 @@ public class KonamiCodeListener : MonoBehaviour
         {
             case 0:
                 launchState = 1;
+                SaveLaunchState();
                 inputCanvas.SetActive(true);
                 return;
 
             case 1:
                 launchState = 2;
+                SaveLaunchState();
                 inputCanvas.SetActive(false);
                 camera.enabled = true;
                 isCameraActive = true;
                 if (hintObject != null)
-                {
                     StartCoroutine(ShowHintTemporarily());
-                }
                 return;
+
             case 2:
-                
                 inputCanvas.SetActive(false);
                 camera.enabled = true;
                 isCameraActive = true;
                 if (hintObject != null)
-                {
                     StartCoroutine(ShowHintTemporarily());
-                }
                 return;
 
             default:
-                // Здесь можно оставить пусто или добавить обработку
                 break;
         }
     }
-    
+
+    private void SaveLaunchState()
+    {
+        PlayerPrefs.SetInt(LaunchStateKey, launchState);
+        PlayerPrefs.Save(); // Принудительно сохраняем на диск
+    }
+
     IEnumerator ShowHintTemporarily()
     {
         hintObject.SetActive(true);
         yield return new WaitForSeconds(hintTime);
         hintObject.SetActive(false);
     }
+    public void ResetLaunchState()
+    {
+        launchState = 0; // сброс к начальному значению
+        PlayerPrefs.SetInt(LaunchStateKey, launchState);
+        PlayerPrefs.Save();
+        Debug.Log("LaunchState сброшен к начальному значению (0)");
+    }
+   
 }
