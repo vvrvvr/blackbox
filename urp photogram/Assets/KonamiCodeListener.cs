@@ -7,6 +7,9 @@ public class KonamiCodeListener : MonoBehaviour
     public FreeFlyCamera camera;
     public GameObject hintObject;
     public float hintTime = 3f;
+    private bool isCameraActive = false;
+    [HideInInspector] public int launchState = 0;
+    public GameObject inputCanvas;
     
     private List<KeyCode> konamiCode = new List<KeyCode> {
         KeyCode.UpArrow, KeyCode.UpArrow,
@@ -46,18 +49,48 @@ public class KonamiCodeListener : MonoBehaviour
             }
 
             // Совпадение — активируем код
-            OnKonamiCodeEntered();
+            OnCameraUnlocked();
             inputBuffer.Clear();
         }
     }
 
-    void OnKonamiCodeEntered()
+    public void OnCameraUnlocked()
     {
         Debug.Log("Konami Code activated!");
-        camera.enabled = true;
-        if (hintObject != null)
+        if (isCameraActive)
+            return;
+
+        switch (launchState)
         {
-            StartCoroutine(ShowHintTemporarily());
+            case 0:
+                launchState = 1;
+                inputCanvas.SetActive(true);
+                return;
+
+            case 1:
+                launchState = 2;
+                inputCanvas.SetActive(false);
+                camera.enabled = true;
+                isCameraActive = true;
+                if (hintObject != null)
+                {
+                    StartCoroutine(ShowHintTemporarily());
+                }
+                return;
+            case 2:
+                
+                inputCanvas.SetActive(false);
+                camera.enabled = true;
+                isCameraActive = true;
+                if (hintObject != null)
+                {
+                    StartCoroutine(ShowHintTemporarily());
+                }
+                return;
+
+            default:
+                // Здесь можно оставить пусто или добавить обработку
+                break;
         }
     }
     

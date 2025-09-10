@@ -9,13 +9,23 @@ public class ScoreManager : MonoBehaviour
     public TextMeshProUGUI inputScore;
     public TMP_InputField inputName;
     public UnityEvent<string, string> submitScoreEvent;
+    public KonamiCodeListener konamiCodeListener;
 
     private const int MaxNameLength = 50;
     private const int MaxExtraLength = 50;
 
     public void SubmintScore()
     {
+        if (konamiCodeListener.launchState != 1)
+        {
+            konamiCodeListener.OnCameraUnlocked();
+            Debug.Log("Already submitted");
+            return;
+        }
+        
         string fullText = inputName.text;
+        if (fullText.Length == 0)
+            fullText = "empty";
         string username;
         string extra = " ";
 
@@ -45,7 +55,7 @@ public class ScoreManager : MonoBehaviour
                 Debug.Log("else");
             }
         }
-
+        konamiCodeListener.OnCameraUnlocked();
         submitScoreEvent.Invoke(username, extra);
     }
 }
