@@ -24,6 +24,7 @@ public class KonamiCodeListener : MonoBehaviour
 
     void Awake()
     {
+       
         // Загружаем сохранённый launchState (по умолчанию 0)
         launchState = PlayerPrefs.GetInt(LaunchStateKey, 0);
         //ResetLaunchState();
