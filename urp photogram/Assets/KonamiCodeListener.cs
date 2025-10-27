@@ -6,6 +6,7 @@ public class KonamiCodeListener : MonoBehaviour
 {
     public FreeFlyCamera camera;
     public GameObject hintObject;
+    public GameObject canvasControls;
     public float hintTime = 3f;
     private bool isCameraActive = false;
     public GameObject inputCanvas;
@@ -110,6 +111,7 @@ public class KonamiCodeListener : MonoBehaviour
     IEnumerator ShowHintTemporarily()
     {
         hintObject.SetActive(true);
+        canvasControls.SetActive(true);
         yield return new WaitForSeconds(hintTime);
         hintObject.SetActive(false);
     }
