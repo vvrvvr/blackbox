@@ -18,6 +18,6 @@ public class InputCharCounter : MonoBehaviour
     private void UpdateCounter(string currentText)
     {
         int remaining = Mathf.Max(0, maxChars - currentText.Length);
-        counterText.text = $"Осталось: {remaining}";
+        counterText.text = $"Charcaters left: {remaining}";
     }
 }
