@@ -14,20 +14,25 @@ public class KonamiCodeListener : MonoBehaviour
 
     private const string LaunchStateKey = "LaunchState"; // ключ для PlayerPrefs
 
-    private List<KeyCode> konamiCode = new List<KeyCode> {
+    // Классический Konami-код
+    private readonly List<KeyCode> konamiCode = new List<KeyCode> {
         KeyCode.UpArrow, KeyCode.UpArrow,
         KeyCode.DownArrow, KeyCode.DownArrow,
         KeyCode.LeftArrow, KeyCode.RightArrow,
         KeyCode.LeftArrow, KeyCode.RightArrow
     };
 
+    // Новый чит-код: V V V V ↓ ↓ ↓ ↓
+    private readonly List<KeyCode> vDownCode = new List<KeyCode> {
+        KeyCode.V, KeyCode.V, KeyCode.V, KeyCode.V,
+        KeyCode.DownArrow, KeyCode.DownArrow, KeyCode.DownArrow, KeyCode.DownArrow
+    };
+
     private List<KeyCode> inputBuffer = new List<KeyCode>();
 
     void Awake()
     {
-       
         // Загружаем сохранённый launchState (по умолчанию 0)
-       // ResetLaunchState();
         launchState = PlayerPrefs.GetInt(LaunchStateKey, 0);
     }
 
@@ -39,6 +44,7 @@ public class KonamiCodeListener : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.DownArrow)) AddInput(KeyCode.DownArrow);
             if (Input.GetKeyDown(KeyCode.LeftArrow)) AddInput(KeyCode.LeftArrow);
             if (Input.GetKeyDown(KeyCode.RightArrow)) AddInput(KeyCode.RightArrow);
+            if (Input.GetKeyDown(KeyCode.V)) AddInput(KeyCode.V);
         }
     }
 
@@ -46,23 +52,38 @@ public class KonamiCodeListener : MonoBehaviour
     {
         inputBuffer.Add(key);
 
-        // Сохраняем длину буфера в пределах длины кода
-        if (inputBuffer.Count > konamiCode.Count)
+        // Ограничиваем длину буфера по максимальной длине кодов
+        int maxLength = Mathf.Max(konamiCode.Count, vDownCode.Count);
+        if (inputBuffer.Count > maxLength)
             inputBuffer.RemoveAt(0);
 
-        // Проверка на совпадение
-        if (inputBuffer.Count == konamiCode.Count)
+        // Проверяем оба кода
+        if (IsSequenceMatch(konamiCode))
         {
-            for (int i = 0; i < konamiCode.Count; i++)
-            {
-                if (inputBuffer[i] != konamiCode[i])
-                    return;
-            }
-
-            // Совпадение — активируем код
-            OnCameraUnlocked();
             inputBuffer.Clear();
+            OnCameraUnlocked();
+            return;
         }
+
+        if (IsSequenceMatch(vDownCode))
+        {
+            inputBuffer.Clear();
+            OnVDownCodeActivated();
+            return;
+        }
+    }
+
+    bool IsSequenceMatch(List<KeyCode> code)
+    {
+        if (inputBuffer.Count < code.Count)
+            return false;
+
+        for (int i = 0; i < code.Count; i++)
+        {
+            if (inputBuffer[inputBuffer.Count - code.Count + i] != code[i])
+                return false;
+        }
+        return true;
     }
 
     public void OnCameraUnlocked()
@@ -96,16 +117,13 @@ public class KonamiCodeListener : MonoBehaviour
                 if (hintObject != null)
                     StartCoroutine(ShowHintTemporarily());
                 return;
-
-            default:
-                break;
         }
     }
 
     private void SaveLaunchState()
     {
         PlayerPrefs.SetInt(LaunchStateKey, launchState);
-        PlayerPrefs.Save(); // Принудительно сохраняем на диск
+        PlayerPrefs.Save();
     }
 
     IEnumerator ShowHintTemporarily()
@@ -115,12 +133,19 @@ public class KonamiCodeListener : MonoBehaviour
         yield return new WaitForSeconds(hintTime);
         hintObject.SetActive(false);
     }
+
     public void ResetLaunchState()
     {
-        launchState = 0; // сброс к начальному значению
+        launchState = 0;
         PlayerPrefs.SetInt(LaunchStateKey, launchState);
         PlayerPrefs.Save();
         Debug.Log("LaunchState сброшен к начальному значению (0)");
     }
-   
+
+    // Новый метод для кода VVVV ↓↓↓↓
+    private void OnVDownCodeActivated()
+    {
+        ResetLaunchState();
+        Debug.Log("v code");
+    }
 }
