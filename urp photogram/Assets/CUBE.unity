@@ -1312,32 +1312,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 183467219}
-  - component: {fileID: 183467218}
+  - component: {fileID: 183467220}
   m_Layer: 0
   m_Name: CHECK_TO_UNLOCK_FREE_CAMERA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &183467218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 183467217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 916fd087e8407ce4dbd5324f6da83c22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  camera: {fileID: 129778796}
-  hintObject: {fileID: 1039237614}
-  canvasControls: {fileID: 1271994666}
-  hintTime: 5
-  inputCanvas: {fileID: 654586835}
-  launchState: 0
+  m_IsActive: 0
 --- !u!4 &183467219
 Transform:
   m_ObjectHideFlags: 0
@@ -1355,6 +1337,19 @@ Transform:
   - {fileID: 670589906}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &183467220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183467217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6352150bb771e9f4bb823459ce1aebda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  konamiCodeListener: {fileID: 233312830}
 --- !u!1 &183872106
 GameObject:
   m_ObjectHideFlags: 0
@@ -1499,6 +1494,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 233312829}
+  - component: {fileID: 233312830}
   m_Layer: 0
   m_Name: ------ check objects below -------
   m_TagString: Untagged
@@ -1521,6 +1517,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &233312830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233312828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 916fd087e8407ce4dbd5324f6da83c22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 129778796}
+  hintObject: {fileID: 1039237614}
+  canvasControls: {fileID: 1271994666}
+  hintTime: 5
+  inputCanvas: {fileID: 654586835}
+  launchState: 0
 --- !u!1 &248581414
 GameObject:
   m_ObjectHideFlags: 0
@@ -3283,7 +3297,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  konamiCodeListener: {fileID: 183467218}
+  konamiCodeListener: {fileID: 233312830}
 --- !u!114 &524069044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3571,7 +3585,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Attention! This text appears only once \u2014 after you unlock the free
-    camera for the first time.\nYou can write a message (up to 100 characters), send
+    camera for the first time.\nYou can write a message (up to 100 characters). Send
     it, and it will (possibly) appear on the cube\u2019s wall, visible to all gallery
     visitors."
   m_isRightToLeft: 0
@@ -3931,14 +3945,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 670589906}
-  - component: {fileID: 670589907}
   m_Layer: 0
   m_Name: ' or press "Active Self" to unlock free camera'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &670589906
 Transform:
   m_ObjectHideFlags: 0
@@ -3954,19 +3967,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 183467219}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &670589907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 670589905}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6352150bb771e9f4bb823459ce1aebda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  konamiCodeListener: {fileID: 183467218}
 --- !u!1001 &672362376
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12791,7 +12791,7 @@ MonoBehaviour:
   submitScoreEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 183467218}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: KonamiCodeListener, Assembly-CSharp
         m_MethodName: OnCameraUnlocked
         m_Mode: 1
@@ -12803,7 +12803,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  konamiCodeListener: {fileID: 183467218}
+  konamiCodeListener: {fileID: 233312830}
 --- !u!114 &2119470984
 MonoBehaviour:
   m_ObjectHideFlags: 0
