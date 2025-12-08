@@ -92,6 +92,11 @@ public class KonamiCodeListener : MonoBehaviour
         // Включаем камеру
         camera.enabled = true;
         isCameraActive = true;
+        
+        // Скрываем курсор для режима камеры
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        
         if (hintObject != null)
             StartCoroutine(ShowHintTemporarily());
     }
@@ -99,9 +104,12 @@ public class KonamiCodeListener : MonoBehaviour
     public void LockCamera()
     {
         Debug.Log("Camera locked!");
-        
         camera.enabled = false;
         isCameraActive = false;
+        
+        // Показываем курсор для работы с UI
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     IEnumerator ShowHintTemporarily()
@@ -117,5 +125,11 @@ public class KonamiCodeListener : MonoBehaviour
     {
         LockCamera();
         Debug.Log("v code");
+    }
+
+    public void CloseScoreBoard()
+    {
+        isScoreBoardActive = false;
+        UnlockCamera();
     }
 }
